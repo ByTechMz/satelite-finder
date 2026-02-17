@@ -466,6 +466,9 @@
             transition: all 0.3s;
             box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
             animation: pulse 2s infinite;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(45deg, #000, var(--bg-tertiary));
         }
 
         .download-button::before {
@@ -506,6 +509,92 @@
         .android-badge i {
             color: var(--primary);
             margin: 0 5px;
+        }
+
+        /* NOTIFICAÇÃO DE DOWNLOAD */
+        .download-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            z-index: 9999;
+            display: none;
+            animation: slideIn 0.5s ease;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .notification-close:hover {
+            color: #fff;
+        }
+
+        /* BOTÃO DE DOWNLOAD DIRETO */
+        .direct-download-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .direct-download-btn:hover {
+            background: var(--secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--secondary);
         }
 
         /* TABELA DE SATÉLITES */
@@ -709,6 +798,22 @@
     </style>
 </head>
 <body>
+    <!-- NOTIFICAÇÃO DE DOWNLOAD -->
+    <div id="downloadNotification" class="download-notification">
+        <div class="notification-content">
+            <div class="notification-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="notification-text">
+                <div class="notification-title" id="notificationTitle">DOWNLOAD INICIADO!</div>
+                <div class="notification-message" id="notificationMessage">Satellite Finder Pro APK</div>
+            </div>
+            <div class="notification-close" onclick="hideNotification()">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- HEADER -->
         <header class="header">
@@ -996,20 +1101,27 @@
 
         <!-- DOWNLOAD SECTION -->
         <div class="download-section">
-            <a href="https://github.com/seu-usuario/satellite-finder/releases/download/v1.0/satellite-finder-pro.apk" 
-               class="download-button" 
-               download>
+            <!-- Botão principal de download (agora funciona localmente) -->
+            <button onclick="downloadAPK()" class="download-button">
                 <i class="fas fa-download"></i> BAIXAR AGORA
-            </a>
+            </button>
+            
             <div class="android-badge">
                 <i class="fab fa-android"></i> EXCLUSIVO PARA ANDROID 8.0+ <i class="fab fa-android"></i>
             </div>
+            
+            <!-- Link direto para o arquivo (fallback) -->
+            <a href="satellite-finder.apk" download="satellite-finder.apk" class="direct-download-btn" onclick="showDirectDownload()">
+                <i class="fas fa-link"></i> Link Direto (fallback)
+            </a>
+            
             <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
-                <i class="fas fa-shield-alt"></i> APK verificado | 23.5 MB | v1.0.3
+                <i class="fas fa-shield-alt"></i> APK verificado | 13.1 MB | v1.0.3
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 20px;" id="downloadCount">
                 <i class="fas fa-code-branch"></i> 1.2k forks 
                 <i class="fas fa-star" style="margin-left: 20px;"></i> 4.7k stars
+                <i class="fas fa-download" style="margin-left: 20px;"></i> <span id="downloadCountNum">4.7k</span> downloads
             </div>
         </div>
 
@@ -1060,6 +1172,82 @@
 
     <!-- SCRIPTS -->
     <script>
+        // Contador de downloads
+        let downloadCount = 4723;
+        
+        // Função para mostrar notificação
+        function showNotification(title, message) {
+            const notification = document.getElementById('downloadNotification');
+            document.getElementById('notificationTitle').textContent = title;
+            document.getElementById('notificationMessage').textContent = message;
+            notification.style.display = 'block';
+            
+            // Esconder após 5 segundos
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+
+        // Função para esconder notificação
+        function hideNotification() {
+            document.getElementById('downloadNotification').style.display = 'none';
+        }
+
+        // Função para verificar se é Android
+        function isAndroid() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf("android") > -1;
+        }
+
+        // Função principal de download (local)
+        function downloadAPK() {
+            // Incrementar contador
+            downloadCount++;
+            document.getElementById('downloadCountNum').textContent = (downloadCount / 1000).toFixed(1) + 'k';
+            
+            // Verificar se é Android
+            if (!isAndroid()) {
+                showNotification(
+                    '⚠️ DISPOSITIVO NÃO SUPORTADO',
+                    'Este APK é exclusivo para Android!'
+                );
+                return;
+            }
+            
+            // Mostrar notificação de início
+            showNotification(
+                '📡 DOWNLOAD INICIADO',
+                'Satellite Finder Pro v1.0.3'
+            );
+            
+            // Criar link de download para o arquivo local
+            const link = document.createElement('a');
+            link.href = 'satellite-finder.apk'; // Arquivo no mesmo diretório
+            link.download = 'satellite-finder.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Feedback háptico (se disponível)
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+            
+            // Log para console
+            console.log(`Download iniciado! Total: ${downloadCount}`);
+        }
+
+        // Função para download direto (fallback)
+        function showDirectDownload() {
+            downloadCount++;
+            document.getElementById('downloadCountNum').textContent = (downloadCount / 1000).toFixed(1) + 'k';
+            
+            showNotification(
+                '📡 DOWNLOAD DIRETO',
+                'Arquivo: satellite-finder.apk'
+            );
+        }
+
         // Efeito de digitação
         const terminalLines = document.querySelectorAll('.terminal-line:last-child .command');
         const text = "./deploy_app.sh --platform=android";
@@ -1068,7 +1256,7 @@
         function typeWriter() {
             if (index < text.length) {
                 terminalLines.forEach(el => {
-                    el.innerHTML = text.substring(0, index + 1);
+                    if (el) el.innerHTML = text.substring(0, index + 1);
                 });
                 index++;
                 setTimeout(typeWriter, 100);
@@ -1088,24 +1276,6 @@
         }
         
         setInterval(updateSignals, 3000);
-
-        // Contador de downloads
-        let downloads = 4723;
-        const downloadBtn = document.querySelector('.download-button');
-        
-        downloadBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            downloads++;
-            alert(`Download iniciado!\nTotal de downloads: ${downloads}\n\nAPENAS PARA ANDROID!`);
-            
-            // Simular download (substitua pelo link real)
-            const link = document.createElement('a');
-            link.href = 'https://github.com/seu-usuario/satellite-finder/releases/download/v1.0/satellite-finder-pro.apk';
-            link.download = 'satellite-finder-pro.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
 
         // Efeito matrix no background
         function createMatrix() {
@@ -1131,11 +1301,11 @@
             
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             const fontSize = 14;
-            const columns = canvas.width / fontSize;
+            const columns = Math.floor(canvas.width / fontSize);
             const drops = [];
             
             for (let x = 0; x < columns; x++) {
-                drops[x] = 1;
+                drops[x] = Math.floor(Math.random() * canvas.height / fontSize);
             }
             
             function draw() {
@@ -1175,6 +1345,27 @@
             const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
             console.log(`%c${randomAlert}`, 'color: #00ff41; font-size: 20px; font-weight: bold;');
         }, 5000);
+
+        // Verificar se o usuário está no Android ao carregar a página
+        window.addEventListener('load', function() {
+            if (!isAndroid()) {
+                showNotification(
+                    '⚠️ ATENÇÃO',
+                    'Este aplicativo é exclusivo para Android!'
+                );
+            }
+            
+            // Verificar se o arquivo APK existe
+            fetch('satellite-finder.apk', { method: 'HEAD' })
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn('Arquivo APK não encontrado no diretório!');
+                    }
+                })
+                .catch(() => {
+                    console.warn('Não foi possível verificar o arquivo APK');
+                });
+        });
     </script>
 </body>
 </html>
