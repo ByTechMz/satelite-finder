@@ -996,9 +996,9 @@
 
         <!-- DOWNLOAD SECTION -->
         <div class="download-section">
-            <a href="https://github.com/bytechmz/satellite-finder/raw/main/satellite-finder.apk" 
-               class="download-button" 
-               download>
+           <a href="satellite-finder.apk" 
+               class="download-button"
+               download="satellite-finder.apk">
                 <i class="fas fa-download"></i> BAIXAR AGORA
             </a>
             <div class="android-badge">
@@ -1088,24 +1088,6 @@
         }
         
         setInterval(updateSignals, 3000);
-
-        // Contador de downloads
-        let downloads = 4723;
-        const downloadBtn = document.querySelector('.download-button');
-        
-        downloadBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            downloads++;
-            alert(`Download iniciado!\nTotal de downloads: ${downloads}\n\nAPENAS PARA ANDROID!`);
-            
-            // Simular download (substitua pelo link real)
-            const link = document.createElement('a');
-            link.href = 'https://github.com/bytechmz/satellite-finder/raw/main/satellite-finder.apk';
-            link.download = 'satellite-finder.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
 
         // Efeito matrix no background
         function createMatrix() {
