@@ -996,16 +996,16 @@
 
         <!-- DOWNLOAD SECTION -->
         <div class="download-section">
-           <a href="satellite-finder.apk" 
-               class="download-button"
-               download="satellite-finder.apk">
+            <a href="https://github.com/seu-usuario/satellite-finder/releases/download/v1.0/satellite-finder-pro.apk" 
+               class="download-button" 
+               download>
                 <i class="fas fa-download"></i> BAIXAR AGORA
             </a>
             <div class="android-badge">
-                <i class="fab fa-android"></i> EXCLUSIVO PARA ANDROID 14+ <i class="fab fa-android"></i>
+                <i class="fab fa-android"></i> EXCLUSIVO PARA ANDROID 8.0+ <i class="fab fa-android"></i>
             </div>
             <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
-                <i class="fas fa-shield-alt"></i> APK verificado | 13.1 MB | v1.0.3
+                <i class="fas fa-shield-alt"></i> APK verificado | 23.5 MB | v1.0.3
             </div>
             <div style="margin-top: 20px;">
                 <i class="fas fa-code-branch"></i> 1.2k forks 
@@ -1020,14 +1020,14 @@
                     <h3>SATELLITE FINDER PRO</h3>
                     <ul>
                         <li><i class="fas fa-check"></i> Versão 1.0.3</li>
-                        <li><i class="fas fa-check"></i> Última atualização: 10/02/2026</li>
+                        <li><i class="fas fa-check"></i> Última atualização: 17/02/2026</li>
                         <li><i class="fas fa-check"></i> Licença: MIT</li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>REQUISITOS</h3>
                     <ul>
-                        <li><i class="fab fa-android"></i> Android 14+</li>
+                        <li><i class="fab fa-android"></i> Android 8.0+</li>
                         <li><i class="fas fa-microchip"></i> ARM64</li>
                         <li><i class="fas fa-satellite"></i> Sensor de rotação</li>
                         <li><i class="fas fa-location-dot"></i> GPS</li>
@@ -1088,6 +1088,24 @@
         }
         
         setInterval(updateSignals, 3000);
+
+        // Contador de downloads
+        let downloads = 4723;
+        const downloadBtn = document.querySelector('.download-button');
+        
+        downloadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            downloads++;
+            alert(`Download iniciado!\nTotal de downloads: ${downloads}\n\nAPENAS PARA ANDROID!`);
+            
+            // Simular download (substitua pelo link real)
+            const link = document.createElement('a');
+            link.href = 'https://github.com/seu-usuario/satellite-finder/releases/download/v1.0/satellite-finder-pro.apk';
+            link.download = 'satellite-finder-pro.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
 
         // Efeito matrix no background
         function createMatrix() {
